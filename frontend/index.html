@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <title>Organic Compound Reaction Analyzer</title> -->
+     <title>REACTORIUM</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&family=Libre+Baskerville:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="main-title">
+                        <i class="fas fa-flask title-icon"></i>
+                        REACTORIUM
+                    </h1>
+                    <!-- <p class="subtitle">
+                        Rule-Based + Machine Learning Chemical Reasoning System
+                    </p> -->
+                    <p class="subtitle">
+                        Experimental AI-Driven Chemical Reasoning System By Dhruvil_Dave
+                    </p>
+                </div>
+                <div class="header-decoration">
+                    <div class="molecule-icon">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="header-divider">
+                <div class="divider-line"></div>
+                <div class="divider-label">Experimental Interface</div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Left Panel -->
+            <div class="left-panel">
+                <!-- Input Section -->
+                <section class="input-section paper-card">
+                    <div class="section-header">
+                        <i class="fas fa-pen-fancy section-icon"></i>
+                        <h2>Chemical Input</h2>
+                        <span class="section-badge">SMILES Notation</span>
+                    </div>
+                    
+                        <!-- ADDED: Input Mode Selector -->
+                        <div class="input-mode-selector">
+                            <div class="mode-toggle">
+                                <div class="mode-label">
+                                    <i class="fas fa-pen-fancy"></i>
+                                    Input Method:
+                                </div>
+                                <div class="mode-buttons">
+                                    <button class="mode-btn active" data-mode="write">
+                                        <i class="fas fa-pen"></i>
+                                        Write
+                                    </button>
+                                    <button class="mode-btn" data-mode="select">
+                                        <i class="fas fa-th-list"></i>
+                                        Select
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ADDED: Component Selector Panel (initially hidden) -->
+                        <div id="component-selector-panel" class="component-selector-panel" style="display: none;">
+                            <div class="selector-header">
+                                <div class="selector-title">
+                                    <i class="fas fa-puzzle-piece"></i>
+                                    <h3>Chemical Component Selector</h3>
+                                </div>
+                                <div class="selector-search">
+                                    <div class="search-wrapper">
+                                        <i class="fas fa-search search-icon"></i>
+                                        <input 
+                                            type="text" 
+                                            id="component-search" 
+                                            class="component-search"
+                                            placeholder="Search components (alcohol, amine, carboxylic acid...)"
+                                        >
+                                        <button id="clear-search" class="clear-search-btn" title="Clear search">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="quick-action-section">
+                                <button id="select-all-btn" class="quick-action-btn">
+                                    <i class="fas fa-check-double"></i>
+                                    All Components
+                                </button>
+                                <div class="selection-counter">
+                                    Selected: <span id="selected-count">0</span>
+                                </div>
+                            </div>
+
+                            <div id="component-buttons-grid" class="component-buttons-grid">
+                                <!-- Component buttons will be generated by JavaScript -->
+                            </div>
+
+                            <div class="selector-footer">
+                                <div class="selected-preview">
+                                    <strong>Selected:</strong>
+                                    <span id="selected-preview-text">None</span>
+                                </div>
+                                <div class="selector-note">
+                                    <i class="fas fa-info-circle"></i>
+                                    Selected components will be converted to chemical notation
+                                </div>
+                            </div>
+</div>
+
+                    <div class="input-group">
+                        <div class="input-label-row">
+                            <label for="chemical-input" class="input-label">
+                                <i class="fas fa-vial label-icon"></i>
+                                Enter a Compound
+                            </label>
+                            <div class="input-hint">
+                                <i class="fas fa-lightbulb"></i>
+                                <!-- Example: CC(=O)O or C1=CC=CC=C1 -->
+                                Example: Alcohol + Amine
+                            </div>
+                        </div>
+                        
+                        <div class="textarea-container">
+                            <!-- <textarea 
+                                id="chemical-input" 
+                                class="chemical-input"
+                                placeholder="e.g., CC(=O)Oc1ccccc1C(=O)O (Aspirin)"
+                                rows="4"
+                            ></textarea> -->
+                            <textarea 
+                                id="chemical-input" 
+                                class="chemical-input"
+                                placeholder="e.g., Alcohol + Amine"
+                                rows="4"
+                            ></textarea>
+                            <div class="textarea-decoration">
+                                <div class="corner corner-tl"></div>
+                                <div class="corner corner-tr"></div>
+                                <div class="corner corner-bl"></div>
+                                <div class="corner corner-br"></div>
+                            </div>
+                        </div>
+                        
+                        <button id="generate-btn" class="generate-btn" type="button">
+                            <i class="fas fa-microscope btn-icon"></i>
+                            Analyze Compound
+                            <span class="btn-subtext">Run Full Analysis</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Reaction Conditions -->
+                <section class="conditions-section paper-card">
+                    <div class="section-header">
+                        <i class="fas fa-clipboard-check section-icon"></i>
+                        <h2>Reaction Conditions</h2>
+                        <span class="section-badge">Laboratory Setup</span>
+                    </div>
+                    
+                    <div class="conditions-grid">
+                        <div class="condition-group">
+                            <h3 class="condition-subtitle">Environment</h3>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="condition-acidic" value="Acidic">
+                                    <span class="checkbox-custom"></span>
+                                    <span class="checkbox-text">Acidic</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="condition-basic" value="Basic">
+                                    <span class="checkbox-custom"></span>
+                                    <span class="checkbox-text">Basic</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="condition-neutral" value="Neutral">
+                                    <span class="checkbox-custom"></span>
+                                    <span class="checkbox-text">Neutral</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="condition-group">
+                            <h3 class="condition-subtitle">Energy</h3>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="condition-heat" value="Heat">
+                                    <span class="checkbox-custom"></span>
+                                    <span class="checkbox-text">Heat</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="condition-light" value="Light">
+                                    <span class="checkbox-custom"></span>
+                                    <span class="checkbox-text">Light</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="condition-catalyst" value="Catalyst">
+                                    <span class="checkbox-custom"></span>
+                                    <span class="checkbox-text">Catalyst</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="conditions-note">
+                        <i class="fas fa-info-circle note-icon"></i>
+                        Conditions applied to reaction pathway analysis
+                    </div>
+                </section>
+
+                <!-- Detected Components -->
+                <section class="components-section paper-card">
+                    <div class="section-header">
+                        <i class="fas fa-puzzle-piece section-icon"></i>
+                        <h2>Detected Components</h2>
+                        <span class="section-badge" id="components-count">0 detected</span>
+                    </div>
+                    
+                    <div id="components-container" class="components-container">
+                        <div class="empty-state">
+                            <i class="fas fa-search empty-icon"></i>
+                            <p>Components will appear here after analysis</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="right-panel">
+                <!-- Results Grid -->
+                <section class="results-section">
+                    <div class="section-header">
+                        <i class="fas fa-chart-bar section-icon"></i>
+                        <h2>Analysis Results</h2>
+                        <span class="section-badge">Computational Output</span>
+                    </div>
+                    
+                    <div id="results-grid" class="results-grid">
+                        <div class="empty-results">
+                            <div class="molecule-placeholder">
+                                <i class="fas fa-molecule"></i>
+                            </div>
+                            <h3>No Analysis Performed</h3>
+                            <p>Enter a Compound and click "Analyze Compound" to begin</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3D Viewer -->
+                <section class="viewer-section">
+                    <div class="viewer-header">
+                        <div class="viewer-title">
+                            <i class="fas fa-cube section-icon"></i>
+                            <h2>3D Molecular Viewer</h2>
+                        </div>
+                        <div class="viewer-subtitle">
+                            <i class="fas fa-expand-alt"></i>
+                            Interactive Visualization
+                        </div>
+                    </div>
+                    
+                    <div id="viewer-container" class="viewer-container">
+                        <div id="viewer" class="viewer"></div>
+                        <div id="viewer-placeholder" class="viewer-overlay">
+                            <div class="overlay-content">
+                                <i class="fas fa-atom overlay-icon"></i>
+                                <p>3D structure will render here</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="viewer-controls" class="viewer-controls">
+                        <div class="control-group">
+                            <button id="rotate-toggle" class="control-btn">
+                                <i class="fas fa-sync-alt"></i>
+                                <span class="btn-text">Auto-Rotate</span>
+                            </button>
+                            <button id="reset-view" class="control-btn">
+                                <i class="fas fa-redo"></i>
+                                <span class="btn-text">Reset View</span>
+                            </button>
+                            <button id="download-png" class="control-btn">
+                                <i class="fas fa-download"></i>
+                                <span class="btn-text">Save Image</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="viewer-legend">
+                        <div class="legend-item">
+                            <span class="legend-color carbon"></span>
+                            <span class="legend-label">Carbon</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color oxygen"></span>
+                            <span class="legend-label">Oxygen</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color hydrogen"></span>
+                            <span class="legend-label">Hydrogen</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color nitrogen"></span>
+                            <span class="legend-label">Nitrogen</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Save to Dataset -->
+                <div class="save-section">
+                    <button id="save-csv-btn" class="save-btn">
+                        <i class="fas fa-archive btn-icon"></i>
+                        Submit to Research Dataset
+                        <span class="btn-subtext">Store results for future analysis</span>
+                    </button>
+                    <div class="save-note">
+                        <i class="fas fa-database note-icon"></i>
+                        Data stored in academic format for ML training
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-flask"></i>
+                    <span>Note :- This is a simulated AI system — not a real chemical reaction engine. </span><p></p>
+                    <!-- <span>⚠️ Educational and Experimental Use Only </span> -->
+                </div>
+                <div class="footer-info">
+                    <!-- <span class="footer-version">v2.1.4</span>
+                    <span class="footer-divider">|</span> -->
+                    <span class="footer-copyright">© & Built by Dhruvi_Dave — AI × Chemistry</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+<!-- Loading Indicator (REQUIRED FOR JS) -->
+<div id="loading" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(247,245,240,0.85);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    font-family:'Inter',sans-serif;
+    color:#2f5d50;
+    font-size:1.1rem;
+">
+    <i class="fas fa-spinner fa-spin" style="margin-right:0.75rem;"></i>
+    Analyzing compound…
+</div>
+    <script src="static/script.js"></script>
+</body>
+</html>
