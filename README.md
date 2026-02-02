@@ -1,5 +1,9 @@
 # 🧪 REACTORIUM  
 ### An Experimental AI-Driven Chemical Reasoning System
+<!-- <p align="center">
+  <img src="assets/reactorium-logo.jpeg" alt="REACTORIUM Logo" width="500"/>
+</p> -->
+![Reactorium Banner](assets/reactorium-logo.jpeg)
 
 **REACTORIUM** is an experimental hybrid **Rule-Based + Machine Learning** system designed to explore how artificial intelligence can *reason* about chemistry rather than only predict outcomes.
 
